@@ -387,16 +387,90 @@ void Function::compute_dom(){
 
 	list<Basic_block*> workinglist; // liste de travail
 	Basic_block *current, *bb, *pred;
-	bool change = true;
 
 	if (dom_computed) return; // on ne le fait qu'une fois
 	comput_succ_pred_BB();   // on a besoin d'avoir calcul� les blocs pr�d�cesseurs et successeurs avant de calculer les dominants
 
 
 	/* A REMPLIR */
+
+	/*Prealable : On trouve la racine*/
 	for (int j=0; j< nbBB; j++){
-		
+		if(current->get_nb_pred() == 0){
+			current = get_BB(j);
+		}
 	}
+
+	/*Prealable : taille d'un tableau de dominants*/
+	int size = current->Domin.size();
+
+	/*algo du slide de cours: CALCUL DES DOMINANTS DANS UN CFG*/
+
+
+	//change := true
+	bool change = true;
+
+	//Domin(r) = {}.       note : la racine se domine soi-meme
+	current->Domin.assign(size, false);
+	current->Domin[current->get_index()] = true;
+
+
+	//WorkingList.push_back(r)
+	workinglist.push_back(current);
+
+	//for  each n in  N−{r}  do
+	for (int j=0; j< nbBB; j++){
+		if(j=current->get_index()){
+
+			//Domin(n) := N
+			get_BB(j)->Domin.assign(size, true);
+		}
+	}
+
+	//do while  (WorkingList <> empty)
+	while(!workinglist.empty()){
+
+		//change := false
+		change = false;
+
+		//n := Head_and_Remove(WorkingList)
+		current = workinglist.front();
+		workinglist.pop_front();
+
+		//T := N
+		std::vector<bool> temp;
+		temp.assign(size, true);
+
+		//for each p in Pred(n) do
+    	for(int j=0; j< current->get_nb_pred(); j++){
+    		for (int k=0; k< nbBB; k++){
+    			temp[k] = temp[k] & current->get_predecessor(j)->Domin[k];
+    		}
+    	}
+
+    	//T +:= Domin(p)
+    	for (int k=0; k< nbBB; k++){
+    		temp[k] = temp[k] & current->Domin[k];
+    	}
+
+		//if D <> Domin(n) then
+    	/* AAAAA COOOOONNNNTTTTTIIIINNNUUUUUEEERRRRRR IIIICCCCIIII*/
+
+    	/*
+		if (current->get_nb_succ()==1){
+			workinglist.push_back(current->get_successor1());
+		}
+		else{
+			workinglist.push_back(current->get_successor1());
+			workinglist.push_back(current->get_successor2());
+			
+		}
+		*/
+	}
+
+
+
+	/*FIN ALGO DU COURS*/
 
 
 	// affichage du resultat
