@@ -392,40 +392,31 @@ void Function::compute_dom(){
 	comput_succ_pred_BB();   // on a besoin d'avoir calcul� les blocs pr�d�cesseurs et successeurs avant de calculer les dominants
 
 
-	/* A REMPLIR */
+	/* ============================== A REMPLIR ==============================================*/
 
-	/*Prealable : On trouve la racine*/
+	/*string de debug*/
+	std::string debug = "";
+	/*std::cout << debug << '\n';*/
+
+	/*Prealable : On trouve les racines et on les ajoute a la workinglist*/
 	for (int j=0; j< nbBB; j++){
-		if(current->get_nb_pred() == 0){
-			current = get_BB(j);
+		if(get_BB(j)->get_nb_pred() == 0){
+			workinglist.push_back(get_BB(j));
 		}
 	}
 
-	/*Prealable : taille d'un tableau de dominants*/
-	int size = current->Domin.size();
 
-	/*algo du slide de cours: CALCUL DES DOMINANTS DANS UN CFG*/
+	/*========== algo du slide de cours: CALCUL DES DOMINANTS DANS UN CFG ===========*/
 
 
 	//change := true
 	bool change = true;
 
-	//Domin(r) = {}.       note : la racine se domine soi-meme
-	current->Domin.assign(size, false);
-	current->Domin[current->get_index()] = true;
-
-
-	//WorkingList.push_back(r)
-	workinglist.push_back(current);
-
 	//for  each n in  N−{r}  do
 	for (int j=0; j< nbBB; j++){
-		if(j=current->get_index()){
-
 			//Domin(n) := N
-			get_BB(j)->Domin.assign(size, true);
+			get_BB(j)->Domin.assign(nbBB, true);
 		}
-	}
 
 	//do while  (WorkingList <> empty)
 	while(!workinglist.empty()){
@@ -437,40 +428,82 @@ void Function::compute_dom(){
 		current = workinglist.front();
 		workinglist.pop_front();
 
+
+
+		if (current -> get_nb_pred() == 0){
+		//Domin(r) = {}.       note : la racine se domine soi-meme
+			current->Domin.assign(nbBB, false);
+			current->Domin[current->get_index()] = true;
+			change = true;
+		}	
+		else {
 		//T := N
-		std::vector<bool> temp;
-		temp.assign(size, true);
+			std::vector<bool> temp;
+			temp.assign(nbBB, true);
 
-		//for each p in Pred(n) do
-    	for(int j=0; j< current->get_nb_pred(); j++){
-    		for (int k=0; k< nbBB; k++){
-    			temp[k] = temp[k] & current->get_predecessor(j)->Domin[k];
+			//for each p in Pred(n) do
+    		for(int j=0; j< current->get_nb_pred(); j++){
+    			for (int k=0; k< nbBB; k++){
+    				temp[k] = temp[k] && current->get_predecessor(j)->Domin[k];
+    			}	
     		}
-    	}
 
-    	//T +:= Domin(p)
-    	for (int k=0; k< nbBB; k++){
-    		temp[k] = temp[k] & current->Domin[k];
-    	}
+			/*debug ="";
+			for(int k=0; k< nbBB; k++) { 
+				debug+= current->Domin[k] ? "true" : "false";
+		 		debug+=" ";
+			}
+			std::cout << "DEBUG CURRENT: " << debug << '\n';
 
-		//if D <> Domin(n) then
-    	/* AAAAA COOOOONNNNTTTTTIIIINNNUUUUUEEERRRRRR IIIICCCCIIII*/
+			debug ="";
+			for(int k=0; k< nbBB; k++) { 
+				debug+= temp[k] ? "true" : "false";
+		 		debug+=" ";
+			}
+			std::cout << "DEBUG TEMP   : " << debug << '\n';*/
 
-    	/*
-		if (current->get_nb_succ()==1){
-			workinglist.push_back(current->get_successor1());
-		}
-		else{
-			workinglist.push_back(current->get_successor1());
-			workinglist.push_back(current->get_successor2());
+
+    		//T +:= Domin(p)
+    		for (int k=0; k< nbBB; k++){
+    			temp[k] = temp[k] && current->Domin[k];
+    		}
+
+    		/*debug ="";
+			for(int k=0; k< nbBB; k++) { 
+				debug+= temp[k] ? "true" : "false";
+		 		debug+=" ";
+			}
+			std::cout << "DEBUG TEMP   : " << debug << '\n';
+
+    		std::cout << "TAILLEDOM: " << temp.size() << '\n';*/
+
+    		//D := T + {n}
+    		temp[current->get_index()] = true;
+
+    		//if D <> Domin(n) then
+    		for(int k=0; k<nbBB; k++){
+    			if(temp[k] != current->Domin[k]){
+    				change = true;
+    				current->Domin[k] = temp[k];
+    			}
+    		}
+		}		
+
+    	if (change){
+			if (current->get_nb_succ()==1){
+				workinglist.push_back(current->get_successor1());
+			}
+			else if (current->get_nb_succ()== 2){
+				workinglist.push_back(current->get_successor1());
+				workinglist.push_back(current->get_successor2());
 			
-		}
-		*/
+			}
+		
+		}	
+		change = false;
 	}
 
-
-
-	/*FIN ALGO DU COURS*/
+	/*========================= FIN ALGO DU COURS ==============================*/
 
 
 	// affichage du resultat
