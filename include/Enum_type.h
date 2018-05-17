@@ -173,8 +173,8 @@ enum t_Dep {NONE, RAW, WAR, WAW, MEMDEP, CONTROL};
 /** 	\brief	Gives the delay between two instructions, in case of RAW dependance , according to their type -- ALU, MEM or BR 			
 */
 /*
-Prod    ALU MEM BR OTHER BAD
-Conso
+Conso    ALU MEM BR OTHER BAD
+Prod
 ALU      1   1   2  -1   -1
 MEM      2   2   3   -1   -1
 BR       1   1   2   -1   -1
@@ -194,8 +194,8 @@ static int t_delay[5][5]={
 // A TESTER AUSSI 
 
 /*
-Prod    ALU MEM BR OTHER BAD
-Conso
+Conso    ALU MEM BR OTHER BAD
+Prod
 ALU      2   2   3  -1   -1
 MEM      3   3   4   -1   -1
 BR       2   2   3   -1   -1
