@@ -4,18 +4,18 @@
 //static
 void Basic_block::show_dependances(Instruction *i1, Instruction *i2){
 
- if(i1->is_dep_RAW1(i2)) 
-  cout<<"Dependance i"<<i1->get_index()<<"->i"<<i2->get_index()<<": RAW1"<<endl; 
-if(i1->is_dep_RAW2(i2)) 
+  if(i1->is_dep_RAW1(i2))
+  cout<<"Dependance i"<<i1->get_index()<<"->i"<<i2->get_index()<<": RAW1"<<endl;
+  if(i1->is_dep_RAW2(i2))
   cout<<"Dependance i"<<i1->get_index()<<"->i"<<i2->get_index()<<": RAW2"<<endl;
 
-if(i1->is_dep_WAR(i2)) 
+  if(i1->is_dep_WAR(i2))
   cout<<"Dependance i"<<i1->get_index()<<"->i"<<i2->get_index()<<": WAR"<<endl;
 
-if(i1->is_dep_WAW(i2)) 
+  if(i1->is_dep_WAW(i2))
   cout<<"Dependance i"<<i1->get_index()<<"->i"<<i2->get_index()<<": WAW"<<endl;
 
-if(i1->is_dep_MEM(i2)) 
+  if(i1->is_dep_MEM(i2))
   cout<<"Dependance i"<<i1->get_index()<<"->i"<<i2->get_index()<<": MEM"<<endl;
 
 }
@@ -23,19 +23,19 @@ if(i1->is_dep_MEM(i2))
 Basic_block::Basic_block():
 Use(vector<bool>(NB_REG, false)),
 LiveIn(vector<bool>(NB_REG, false)),
-LiveOut(vector<bool>(NB_REG, false)), 
+LiveOut(vector<bool>(NB_REG, false)),
 Def(vector<bool>(NB_REG, false)),
-DefLiveOut(vector<int>(NB_REG, -1)), 
+DefLiveOut(vector<int>(NB_REG, -1)),
 Domin(vector<bool>(NB_MAX_BB, false)){
- _head = NULL;
- _end = NULL;
- _branch = NULL;
- _index = 0;
- _nb_instr = 0;
- _firstInst=NULL;
- _lastInst=NULL;
- dep_done = false;
- use_def_done = false;
+  _head = NULL;
+  _end = NULL;
+  _branch = NULL;
+  _index = 0;
+  _nb_instr = 0;
+  _firstInst=NULL;
+  _lastInst=NULL;
+  dep_done = false;
+  use_def_done = false;
 }
 
 
@@ -43,206 +43,206 @@ Basic_block::~Basic_block(){}
 
 
 void Basic_block::set_index(int i){
- _index = i;
+  _index = i;
 }
 
 int Basic_block::get_index(){
- return _index;
+  return _index;
 }
 
 void Basic_block::set_head(Line *head){
- _head = head;
+  _head = head;
 }
 
 void Basic_block::set_end(Line *end){
- _end = end;
+  _end = end;
 }
 
 Line* Basic_block::get_head(){
- return _head;
+  return _head;
 }
 
 Line* Basic_block::get_end(){
- return _end;
+  return _end;
 }
 
 void Basic_block::set_successor1(Basic_block *BB){
- _succ.push_front(BB);
+  _succ.push_front(BB);
 }
 
 Basic_block *Basic_block::get_successor1(){
- if (_succ.size()>0)
+  if (_succ.size()>0)
   return _succ.front();
-else 
+  else
   return NULL;
 }
 
-void Basic_block::set_successor2(Basic_block *BB){	
- _succ.push_back(BB);
+void Basic_block::set_successor2(Basic_block *BB){
+  _succ.push_back(BB);
 }
 
 Basic_block *Basic_block::get_successor2(){
- if (_succ.size()> 1)
+  if (_succ.size()> 1)
   return _succ.back();
-else 
+  else
   return NULL;
 }
 
 void Basic_block::set_predecessor(Basic_block *BB){
- _pred.push_back(BB);
+  _pred.push_back(BB);
 }
 
 Basic_block *Basic_block::get_predecessor(int index){
 
- list<Basic_block*>::iterator it;
- it=_pred.begin();
- int size=(int)_pred.size();
- if(index< size){
-  for (int i=0; i<index; i++, it++);
-    return *it;	
-}
-else cout<<"Error: index is bigger than the size of the list"<<endl; 	
-return _pred.back();
+  list<Basic_block*>::iterator it;
+  it=_pred.begin();
+  int size=(int)_pred.size();
+  if(index< size){
+    for (int i=0; i<index; i++, it++);
+    return *it;
+  }
+  else cout<<"Error: index is bigger than the size of the list"<<endl;
+  return _pred.back();
 
 }
 
 int Basic_block::get_nb_succ(){
- return _succ.size();
+  return _succ.size();
 }
 
 int Basic_block::get_nb_pred(){
- return _pred.size();
+  return _pred.size();
 }
 
 void Basic_block::set_branch(Line* br){
- _branch=br;
+  _branch=br;
 }
 
 Line* Basic_block::get_branch(){
- return _branch;
+  return _branch;
 }
 
 void Basic_block::display(){
- cout<<"Begin BB"<<endl;
- Line* element = _head;
- int i=0;
- if(element == _end)	
+  cout<<"Begin BB"<<endl;
+  Line* element = _head;
+  int i=0;
+  if(element == _end)
   cout << _head->get_content() <<endl;
 
-while(element != _end->get_next()){
-  if(element->isInst()){
-    cout<<"i"<<i<<" ";
-    i++;
-  }
-  if(!element->isDirective())
+  while(element != _end->get_next()){
+    if(element->isInst()){
+      cout<<"i"<<i<<" ";
+      i++;
+    }
+    if(!element->isDirective())
     cout <<element->get_content() <<endl;
 
-  element = element->get_next();
-}
-cout<<"End BB"<<endl;
+    element = element->get_next();
+  }
+  cout<<"End BB"<<endl;
 }
 
 string Basic_block::get_content(){
- string rt = "";
- Line* element = _head;
+  string rt = "";
+  Line* element = _head;
 
 
- while(element != _end->get_next()){
-   if(element->isInst()){
-     rt = rt + element->get_content() + "\\l" ;	 	
-   }
-   else if(element->isLabel())
-     rt = rt + element->get_content() + "\\l" ;
+  while(element != _end->get_next()){
+    if(element->isInst()){
+      rt = rt + element->get_content() + "\\l" ;
+    }
+    else if(element->isLabel())
+    rt = rt + element->get_content() + "\\l" ;
 
-   element = element->get_next();
- }
+    element = element->get_next();
+  }
 
- return rt ;
+  return rt ;
 }
 
 int Basic_block::size(){
- Line* element = _head;
- int lenght=0;
- while(element != _end){
-  lenght++;
-  if(element->get_next()==_end)	
+  Line* element = _head;
+  int lenght=0;
+  while(element != _end){
+    lenght++;
+    if(element->get_next()==_end)
     break;
-  else 
+    else
     element = element->get_next();
+  }
+  return lenght;
 }
-return lenght;
-}	
 
 
-void Basic_block::restitution(string const filename){	
- Line* element = _head;
- ofstream monflux(filename.c_str(), ios::app);
- if(monflux){
-  monflux<<"Begin BB"<<endl;
-  if(element == _end)	
-   monflux << _head->get_content() <<endl;
- while(element != _end)
- {
-  if(element->isInst()) 
-   monflux<<"\t";
- if(!element->isDirective())
-   monflux << element->get_content()<<endl ;
+void Basic_block::restitution(string const filename){
+  Line* element = _head;
+  ofstream monflux(filename.c_str(), ios::app);
+  if(monflux){
+    monflux<<"Begin BB"<<endl;
+    if(element == _end)
+    monflux << _head->get_content() <<endl;
+    while(element != _end)
+    {
+      if(element->isInst())
+      monflux<<"\t";
+      if(!element->isDirective())
+      monflux << element->get_content()<<endl ;
 
- if(element->get_next()==_end){
-   if(element->get_next()->isInst()) 
-    monflux<<"\t";
-  if(!element->isDirective())
-    monflux << element->get_next()->get_content()<<endl;
-  break;
-}
-else element = element->get_next();
-}
-monflux<<"End BB\n\n"<<endl;		
-}
-else {
-  cout<<"Error cannot open the file"<<endl;
-}
-monflux.close();
+      if(element->get_next()==_end){
+        if(element->get_next()->isInst())
+        monflux<<"\t";
+        if(!element->isDirective())
+        monflux << element->get_next()->get_content()<<endl;
+        break;
+      }
+      else element = element->get_next();
+    }
+    monflux<<"End BB\n\n"<<endl;
+  }
+  else {
+    cout<<"Error cannot open the file"<<endl;
+  }
+  monflux.close();
 
 }
 
 bool Basic_block::is_labeled(){
- if (_head->isLabel()){
-  return true;
-}
-else return false;
+  if (_head->isLabel()){
+    return true;
+  }
+  else return false;
 }
 
-int Basic_block::get_nb_inst(){   
- if (_nb_instr == 0)
+int Basic_block::get_nb_inst(){
+  if (_nb_instr == 0)
   link_instructions();
-return _nb_instr;
+  return _nb_instr;
 
 }
 
 Instruction* Basic_block::get_instruction_at_index(int index){
- Instruction *inst;
+  Instruction *inst;
 
- if(index >= get_nb_inst()){
-  return NULL;
-}
+  if(index >= get_nb_inst()){
+    return NULL;
+  }
 
-inst=get_first_instruction();
+  inst=get_first_instruction();
 
-for(int i=0; i<index; i++, inst=inst->get_next());
+  for(int i=0; i<index; i++, inst=inst->get_next());
 
- return inst;
+  return inst;
 }
 
 Line* Basic_block::get_first_line_instruction(){
 
- Line *current = _head;
- while(!current->isInst()){
-  current=current->get_next();
-  if(current==_end && !current->isInst())
+  Line *current = _head;
+  while(!current->isInst()){
+    current=current->get_next();
+    if(current==_end && !current->isInst())
     return NULL;
-}
-return current;
+  }
+  return current;
 }
 
 Instruction* Basic_block::get_first_instruction(){
@@ -254,9 +254,9 @@ Instruction* Basic_block::get_first_instruction(){
 }
 
 Instruction* Basic_block::get_last_instruction(){
- if(_lastInst==NULL)
+  if(_lastInst==NULL)
   this->link_instructions();
-return _lastInst;
+  return _lastInst;
 }
 
 
@@ -265,56 +265,56 @@ return _lastInst;
 /* remplit le champ derniere instruction du bloc (_lastInst) */
 void Basic_block::link_instructions(){
 
- int index=0;
- Line *current, *next;
- current=get_first_line_instruction();
- next=current->get_next();
+  int index=0;
+  Line *current, *next;
+  current=get_first_line_instruction();
+  next=current->get_next();
 
- Instruction *i1 = getInst(current);
+  Instruction *i1 = getInst(current);
 
- i1->set_index(index);
- index++;
- Instruction *i2;
+  i1->set_index(index);
+  index++;
+  Instruction *i2;
 
-//Calcul des successeurs
- while(current != _end){
+  //Calcul des successeurs
+  while(current != _end){
 
-  while(!next->isInst()){
-    next=next->get_next();
-    if(next==_end){
-     if(next->isInst())
-      break;
-    else{
-      _lastInst = i1;
-      _nb_instr = index;
-      return;
+    while(!next->isInst()){
+      next=next->get_next();
+      if(next==_end){
+        if(next->isInst())
+        break;
+        else{
+          _lastInst = i1;
+          _nb_instr = index;
+          return;
+        }
+      }
     }
+
+    i2 = getInst(next);
+    i2->set_index(index);
+    index++;
+    i1->set_link_succ_pred(i2);
+
+    i1=i2;
+    current=next;
+    next=next->get_next();
   }
-}
-
-i2 = getInst(next);
-i2->set_index(index);
-index++;
-i1->set_link_succ_pred(i2);
-
-i1=i2;
-current=next;
-next=next->get_next();
-}
-_lastInst = i1;
-_nb_instr = index;
+  _lastInst = i1;
+  _nb_instr = index;
 }
 
 bool Basic_block::is_delayed_slot(Instruction *i){
- if (get_branch()== NULL)
+  if (get_branch()== NULL)
   return false;
-int j = (getInst(get_branch()))->get_index();
-return (j < i-> get_index());
+  int j = (getInst(get_branch()))->get_index();
+  return (j < i-> get_index());
 
 }
 
 /* set_link_succ_pred : ajoute succ comme successeur de this et ajoute this comme prédécesseur de succ
- */
+*/
 
 void Basic_block::set_link_succ_pred(Basic_block* succ){
   _succ.push_back(succ);
@@ -327,22 +327,22 @@ void Basic_block::set_link_succ_pred(Basic_block* succ){
 /* dep est une structure de données contenant une instruction et  un type de dépendance */
 
 void add_dep_link(Instruction *pred, Instruction* succ, t_Dep type){
- dep *d;
- d=(dep*)malloc(sizeof(dep));
- d->inst=succ;
- d->type=type;
- pred->add_succ_dep(d);
+  dep *d;
+  d=(dep*)malloc(sizeof(dep));
+  d->inst=succ;
+  d->type=type;
+  pred->add_succ_dep(d);
 
- d=(dep*)malloc(sizeof(dep));
- d->inst=pred;
- d->type=type;
- succ->add_pred_dep(d);
+  d=(dep*)malloc(sizeof(dep));
+  d->inst=pred;
+  d->type=type;
+  succ->add_pred_dep(d);
 }
 
 
 /* calcul des dépendances entre les instructions dans le bloc  */
 /* une instruction a au plus 1 reg dest et 2 reg sources */
-/* Attention le reg source peut être 2 fois le même */ 
+/* Attention le reg source peut être 2 fois le même */
 /* Utiliser les méthodes is_dep_RAW1, is_dep_RAW2, is_dep_WAR, is_dep_WAW, is_dep_MEM pour déterminer les dépendances */
 
 /* ne pas oublier les dépendances de controle avec le branchement s'il y en a un */
@@ -358,7 +358,7 @@ void Basic_block::comput_pred_succ_dep(){
   Instruction *i_current;
   Instruction *itmp;
 
-  /* A REMPLIR */  
+  /* A REMPLIR */
   for(int i = 0 ; i < get_nb_inst(); i++){
     i_current = get_instruction_at_index(i);
 
@@ -376,7 +376,7 @@ void Basic_block::comput_pred_succ_dep(){
         add_dep_link(i_current,get_instruction_at_index(j),RAW);
       }
 
-       //dep WAR1
+      //dep WAR1
       if(i_current->is_dep_WAR1(get_instruction_at_index(j))){
         cout << i << " raw " << j << " WAR1" <<endl;
         add_dep_link(i_current,get_instruction_at_index(j),WAR);
@@ -389,7 +389,7 @@ void Basic_block::comput_pred_succ_dep(){
       }
 
       //dep MEM
-       if(i_current->is_dep_MEM(get_instruction_at_index(j))){
+      if(i_current->is_dep_MEM(get_instruction_at_index(j))){
         cout << i << " mem " << j <<endl;
         add_dep_link(i_current,get_instruction_at_index(j),MEMDEP);
       }
@@ -399,34 +399,34 @@ void Basic_block::comput_pred_succ_dep(){
       if(i_current->is_dep_WAW(get_instruction_at_index(j))){
         cout << i << " waw " << j << " WAW : break" <<endl;
         break;
-      } 
+      }
 
 
 
     }
   }
-  
+
   for(int i = 0 ; i < get_nb_inst(); i++){
-   i_current = get_instruction_at_index(i);
-   if(i_current->is_branch()){
-    break;
-  }
-  //cout << i_current->to_string()<< " nb succ " << i_current->get_nb_succ() <<endl;
-  if(i_current->get_nb_succ()==0 ){
-    //cout << "isbranch " << get_instruction_at_index(get_nb_inst()-2)->to_string() << " " << get_instruction_at_index(get_nb_inst()-1)->is_branch()<<endl;
-    if(get_instruction_at_index(get_nb_inst()-2)->is_branch()){
-      add_dep_link(i_current,get_instruction_at_index(get_nb_inst()-2),CONTROL);
-      cout << i << " control " <<endl;
+    i_current = get_instruction_at_index(i);
+    if(i_current->is_branch()){
+      break;
     }
-  }
+    //cout << i_current->to_string()<< " nb succ " << i_current->get_nb_succ() <<endl;
+    if(i_current->get_nb_succ()==0 ){
+      //cout << "isbranch " << get_instruction_at_index(get_nb_inst()-2)->to_string() << " " << get_instruction_at_index(get_nb_inst()-1)->is_branch()<<endl;
+      if(get_instruction_at_index(get_nb_inst()-2)->is_branch()){
+        add_dep_link(i_current,get_instruction_at_index(get_nb_inst()-2),CONTROL);
+        cout << i << " control " <<endl;
+      }
+    }
 
-}
+  }
 
 
 
   // NE PAS ENLEVER : cette fonction ne doit être appelée qu'une seule fois
-dep_done = true;
-return;
+  dep_done = true;
+  return;
 }
 
 void Basic_block::reset_pred_succ_dep(){
@@ -446,28 +446,28 @@ int Basic_block::nb_cycles(){
 
   Instruction *ic=get_first_instruction();
 
-   /* tableau ci-dessous utile pour savoir pour chaque instruction quand elle sort pour en déduire les cycles qu'elle peut induire avec les instructions qui en dépendent, initialisation à -1  */
+  /* tableau ci-dessous utile pour savoir pour chaque instruction quand elle sort pour en déduire les cycles qu'elle peut induire avec les instructions qui en dépendent, initialisation à -1  */
 
-  vector<int> inst_cycle(get_nb_inst()); 
+  vector<int> inst_cycle(get_nb_inst());
   for (int i=0; i< get_nb_inst(); i++ ){
-   inst_cycle[i] = -1;
- }
- comput_pred_succ_dep();
+    inst_cycle[i] = -1;
+  }
+  comput_pred_succ_dep();
 
 
 
-   /* A REMPLIR */
+  /* A REMPLIR */
 
 
 
- return 0;
+  return 0;
 }
 
-/* 
-calcule DEF et USE pour l'analyse de registre vivant 
+/*
+calcule DEF et USE pour l'analyse de registre vivant
 à la fin on doit avoir
- USE[i] vaut 1 si $i est utilisé dans le bloc avant d'être potentiellement défini dans le bloc
- DEF[i] vaut 1 si $i est défini dans le bloc 
+USE[i] vaut 1 si $i est utilisé dans le bloc avant d'être potentiellement défini dans le bloc
+DEF[i] vaut 1 si $i est défini dans le bloc
 ne pas oublier les conventions d'appel : les registres $4, $5, $6, $7 peuvent contenir des paramètres (du 1er au 4eme les autres sont sur la pile) avant un appel de fonctions, au retour d'une fonction $2 a été écrit car il contient la valeur de retour (sauf si on rend void). Un appel de fonction (call) écrit aussi l'adresse de retour dans $31.
 
 ******************/
@@ -476,28 +476,92 @@ void Basic_block::compute_use_def(void){
   Instruction * inst = get_first_instruction();
   if (use_def_done) return;
 
-  /* A REMPLIR */
 
-#ifdef DEBUG  
+  //Use
+  for(int i = 0; i < get_nb_inst();i++){
+
+    inst = get_instruction_at_index(i);
+cout << inst->to_string();
+    if(inst->get_reg_dst()!=NULL){
+    // cout << "def : " << inst->get_reg_dst()->get_reg()<<endl;
+      if(Def[inst->get_reg_dst()->get_reg()]==true){
+
+      }
+      else{
+        Def[inst->get_reg_dst()->get_reg()]=true;
+      //  cout << " DEF : " << inst->get_reg_dst()->get_reg();
+      }
+    }
+
+    if(inst->is_call()){
+      // cout << "op " << inst->get_op_label()->to_string()<< "--------------------------------------" << endl;
+      Def[31]=true;
+      Def[2]=true;
+      // cout << " def 4 " << Def[4] << endl;
+      // cout << " def 5 " << Def[5] << endl;
+      // cout << " def 6 " << Def[6] << endl;
+      if(Def[4]==false){ Use[4] = true; }
+      if(Def[5]==false){ Use[5] = true; }
+      if(Def[6]==false){ Use[6] = true; }
+  }
+
+    if(inst->get_reg_src1()!=NULL){
+    //   cout << "use : " << inst->get_reg_src1()->get_reg()<<endl;
+    if(Use[inst->get_reg_src1()->get_reg()]==true){
+      }
+      if(Def[inst->get_reg_src1()->get_reg()] != NULL && Def[inst->get_reg_src1()->get_reg()]==true){
+      }
+
+      else{
+        Use[inst->get_reg_src1()->get_reg()]=true;
+      //  cout << " USE " << inst->get_reg_src1()->get_reg();
+      }
+    }
+
+    if(inst->get_reg_src2()!=NULL){
+    //  cout << "use : " << inst->get_reg_src2()->get_reg()<<endl;
+      if(Use[inst->get_reg_src2()->get_reg()]==true){
+      }
+
+      if(Def[inst->get_reg_src2()->get_reg()]!= NULL && Def[inst->get_reg_src2()->get_reg()]==true){
+      }
+
+      else{
+        Use[inst->get_reg_src2()->get_reg()]=true;
+        //  cout << " USE " << inst->get_reg_src1()->get_reg();
+      }
+    }
+
+    cout << endl;
+
+
+}
+
+  Use[0]=true;
+
+
+
+
+
   cout << "****** BB " << get_index() << "************" << endl;
   cout << "USE : " ;
   for(int i=0; i<NB_REG; i++){
     if (Use[i])
-      cout << "$"<< i << " "; 
+    cout << "$"<< i << " ";
   }
   cout << endl;
   cout << "DEF : " ;
   for(int i=0; i<NB_REG; i++){
     if (Def[i])
-     cout << "$"<< i << " "; 
- }
- cout << endl;
-#endif
+    cout << "$"<< i << " ";
+  }
+  cout << endl;
 
- return;
+  return;
+
 }
 
-/**** compute_def_liveout 
+/**** compute_def_liveout
 à la fin de la fonction on doit avoir
 DefLiveOut[i] vaut l'index de l'instruction du bloc qui définit $i si $i vivant en sortie seulement
 Si $i est défini plusieurs fois c'est l'instruction avec l'index le plus grand
@@ -508,21 +572,21 @@ void Basic_block::compute_def_liveout(){
 
   /* A REMPLIR */
 
-#ifdef DEBUG
+  #ifdef DEBUG
   cout << "DEF LIVE OUT: " ;
   for(int i=0; i<NB_REG; i++){
     if (DefLiveOut[i] != -1)
-     cout << "$"<< i << " definit par i" << DefLiveOut[i] << endl; 
- }
+    cout << "$"<< i << " definit par i" << DefLiveOut[i] << endl;
+  }
 
-#endif
+  #endif
 
 }
 
 
 
 /**** renomme les registres renommables : ceux qui sont définis et utilisés dans le bloc et dont la définition n'est pas vivante en sortie
-Utilise comme registres disponibles ceux dont le numéro est dans la liste paramètre 
+Utilise comme registres disponibles ceux dont le numéro est dans la liste paramètre
 *****/
 void Basic_block::reg_rename(list<int> *frees){
   Instruction * inst = get_first_instruction();
@@ -536,86 +600,86 @@ void Basic_block::reg_rename(list<int> *frees){
 
 
 /**** renomme les registres renommables : ceux qui sont définis et utilisés dans le bloc et dont la définition n'est pas vivante en sortie
-Utilise comme registres disponibles ceux dont le numéro est dans la liste paramètre 
+Utilise comme registres disponibles ceux dont le numéro est dans la liste paramètre
 *****/
 void Basic_block::reg_rename(){
   Instruction * inst = get_first_instruction();
   int newr;
   list<int> *frees, lfree;
 
-  
+
   /* A REMPLIR */
 }
 
 void Basic_block::apply_scheduling(list <Node_dfg*> *new_order){
- list <Node_dfg*>::iterator it=new_order->begin();
- Instruction *inst=(*it)->get_instruction();
- Line *n=_head, *prevn=NULL;
- Line *end_next = _end->get_next();
- if(!n){
-  cout<<"wrong bb : cannot apply"<<endl;
+  list <Node_dfg*>::iterator it=new_order->begin();
+  Instruction *inst=(*it)->get_instruction();
+  Line *n=_head, *prevn=NULL;
+  Line *end_next = _end->get_next();
+  if(!n){
+    cout<<"wrong bb : cannot apply"<<endl;
+    return;
+  }
+
+  while(!n->isInst()){
+    prevn=n;
+    n=n->get_next();
+    if(n==_end){
+      cout<<"wrong bb : cannot apply"<<endl;
+      return;
+    }
+  }
+
+  //y'a des instructions, on sait pas si c'est le bon BB, mais on va supposer que oui
+  inst->set_index(0);
+  inst->set_prev(NULL);
+  _firstInst = inst;
+  n = inst;
+
+  if(prevn){
+    prevn->set_next(n);
+    n->set_prev(prevn);
+  }
+  else{
+    set_head(n);
+  }
+
+  int i;
+  it++;
+  for(i=1; it!=new_order->end(); it++, i++){
+
+    inst->set_link_succ_pred((*it)->get_instruction());
+
+    inst=(*it)->get_instruction();
+    inst->set_index(i);
+    prevn = n;
+    n = inst;
+    prevn->set_next(n);
+    n->set_prev(prevn);
+  }
+  inst->set_next(NULL);
+  _lastInst = inst;
+  set_end(n);
+  n->set_next(end_next);
   return;
-}
-
-while(!n->isInst()){
- prevn=n;
- n=n->get_next();
- if(n==_end){
-   cout<<"wrong bb : cannot apply"<<endl;
-   return;
- }
-}
-
-   //y'a des instructions, on sait pas si c'est le bon BB, mais on va supposer que oui
-inst->set_index(0);
-inst->set_prev(NULL);
-_firstInst = inst;
-n = inst;
-
-if(prevn){
- prevn->set_next(n);
- n->set_prev(prevn);
-}
-else{
- set_head(n);
-}
-
-int i;
-it++;
-for(i=1; it!=new_order->end(); it++, i++){
-
- inst->set_link_succ_pred((*it)->get_instruction());
-
- inst=(*it)->get_instruction();
- inst->set_index(i);
- prevn = n;
- n = inst;
- prevn->set_next(n);
- n->set_prev(prevn);
-}
-inst->set_next(NULL);
-_lastInst = inst;
-set_end(n);
-n->set_next(end_next);
-return;
 }
 
 /* permet de tester des choses sur un bloc de base, par exemple la construction d'un DFG, à venir ... là ne fait rien qu'afficher le BB */
 void Basic_block::test(){
- cout << "test du BB " << get_index() << endl;
- display();
- cout << "nb de successeur : " << get_nb_succ() << endl;
- int nbsucc = get_nb_succ() ;
- if (nbsucc >= 1 && get_successor1())
+  cout << "test du BB " << get_index() << endl;
+  display();
+  cout << "nb de successeur : " << get_nb_succ() << endl;
+  int nbsucc = get_nb_succ() ;
+  if (nbsucc >= 1 && get_successor1())
   cout << "succ1 : " << get_successor1()-> get_index();
-if (nbsucc >= 2 && get_successor2())
+  if (nbsucc >= 2 && get_successor2())
   cout << " succ2 : " << get_successor2()-> get_index();
-cout << endl << "nb de predecesseurs : " << get_nb_pred() << endl ;
+  cout << endl << "nb de predecesseurs : " << get_nb_pred() << endl ;
 
-int size=(int)_pred.size();
-for (int i = 0; i < size; i++){
-  if (get_predecessor(i) != NULL)
+  int size=(int)_pred.size();
+  for (int i = 0; i < size; i++){
+    if (get_predecessor(i) != NULL)
     cout << "pred "<< i <<  " : " << get_predecessor(i)-> get_index() << "; ";
-}
-cout << endl;
+  }
+  cout << endl;
 }

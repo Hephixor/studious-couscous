@@ -8,8 +8,8 @@ int main(int argc, char * argv[]){
 
 	if (argc < 2) {
 	  cout << "erreur : pas de fichier assembleur" << endl;
-	}	  
-	
+	}
+
 	// moche mais pour nommer mieux les fichiers dot en sortie avec nom du fichier uniquement (pas le chemin) et sans extension
 	int ii, debut = 0;
 	for (ii = 0; ii < strlen(argv[1]); ii++){
@@ -20,10 +20,10 @@ int main(int argc, char * argv[]){
 	strncpy(name, argv[1]+debut, ii-debut);
 	name[ii] = '\0';
 
-	
+
 	Program prog(argv[1]);
 	Function* functmp;
-	list <Function*> myfunc; 
+	list <Function*> myfunc;
 	list <Basic_block*> myBB;
 
 	cout<<"Le programme a "<<prog.size()<<" lignes\n"<<endl;
@@ -39,73 +39,74 @@ int main(int argc, char * argv[]){
 	list<int> frees;
 	Dfg *d;
 	Cfg *c;
-	
+
 	std::ostringstream *oss ;
 
-	//traitement pour toutes les fonction 
+	//traitement pour toutes les fonction
 	for(itfct=prog.function_list_begin(), i=0;
 	    itfct!=prog.function_list_end(); itfct++, i++){
 
 	   functmp=*itfct;
 	   cout<<"------------Function DISPLAY----------\n" <<endl;
 	   functmp->display();
-	   
+
 	   // delimitation des BB de la fonction
 	   functmp->comput_basic_block();
 	   // association des labels avec le bloc qui le suit
 	   functmp->comput_label();
 	   // determination des liens entre les BB
 	   functmp->comput_succ_pred_BB();
-	   
+
 	   // production d'un fichier .dot pour le CFG de la fonction
-	   oss=new std::ostringstream;	   
+	   oss=new std::ostringstream;
 	   (*oss)<<"./tmp/"<< name << "_cfg_func_" << i<<".dot";
 	   c=new Cfg(functmp->get_BB(0), functmp->nbr_BB());
 	   c->restitution(NULL, oss->str());
-	   
+
 	   cout<<"========== Function "<<i<<"==========="<<endl;
 	   cout<<"============================"<<endl;
-	   
-	   // calcul des registres vivants en entrée et sortie des BB
+
+	   // calcul des registres vivants en entrï¿½e et sortie des BB
 	   functmp ->compute_live_var();
 	   j=0;
-	   
+
 	   // iteration sur tous les BB du CFG
-	   for(itbb=functmp->bb_list_begin(); 
+	   for(itbb=functmp->bb_list_begin();
 	       itbb!=functmp->bb_list_end(); itbb++, j++){
-	     
+
 	     bb=*itbb;
 	     cout<<"----------BB "<<j<<"-----------"<<endl;
-	     
+
 	     //affichage du BB
 	     bb->display();
-	     // création des liens entre les instructions du BB 
+	     // crï¿½ation des liens entre les instructions du BB
 	     bb->link_instructions();
 
-	     //calcul des liens de dépendances entre les instructions du BB
+	     //calcul des liens de dï¿½pendances entre les instructions du BB
 	      bb->comput_pred_succ_dep();
 
 	      /**************** CALCUL NB CYCLES *********************/
 	      //affichage du nb de cycle pour l'execution du BB
 	      cout<<"---nb_cycles : "<<bb->nb_cycles()<<"-----------"<<endl;
 
-	      // creation du DAG de dépendance associé au BB
+	      // creation du DAG de dï¿½pendance associï¿½ au BB
 	      d = new Dfg(bb);
 
-	     
+				bb->compute_use_def();
+
 	      string str;
 	      stringstream sstm;
 	      sstm << "./tmp/" << name << "_func_" << i << "_dfg_bb" << bb->get_index() <<".dot";
 	      str = sstm.str();
 	      d->restitute(NULL, str, true);
 
-	      /*********** CALCUL CHEMIN CRITIQUE  ***********/ 
+	      /*********** CALCUL CHEMIN CRITIQUE  ***********/
 
 	      cout<<"comput critical path"<<endl;
 	      d->comput_critical_path();
 	      cout<<"critical path "<<d->get_critical_path()<<endl;
-	      
-	      /************** REORDONNANCEMENT *****************/ 
+
+	      /************** REORDONNANCEMENT *****************/
 
 	      // calcul d'un nouvel ordonnancement
 
@@ -116,19 +117,19 @@ int main(int argc, char * argv[]){
 	      //cout<<"----  new scheduling: -----"<<endl;
 	      //d->display_sheduled_instr();
 
-	      // Application du  nouvel ordonnancement (changement réel dans le BB)
+	      // Application du  nouvel ordonnancement (changement rï¿½el dans le BB)
 	      //d->apply_scheduling();
 	      // cout<<"---- BB with new scheduling: -----"<<endl;
 	      // bb->display();
 
-	      // recalcul du nb de cycle après scheduling 
+	      // recalcul du nb de cycle aprï¿½s scheduling
 	      // cout<<"---nb_cycles : "<<bb->nb_cycles()<<"-----------"<<endl;
-	   
-	      
-	      /**************** RENOMMAGE DE REGISTRE ****************/ 
+
+
+	      /**************** RENOMMAGE DE REGISTRE ****************/
 
 	      // liste de registres pour le renommage
-	      // avec des registres passéees en paramètre 
+	      // avec des registres passï¿½ees en paramï¿½tre
 	      /*
 	      frees.clear();
 	      for(int k=32; k<64; k++){
@@ -137,12 +138,12 @@ int main(int argc, char * argv[]){
 	      */
 
 	      /* renommage en utilisant des registres n'existant pas */
-	      
+
 	      //  bb->reg_rename(&frees);
 
 	      /* renommage utilisant les registres disponibles dans le bloc */
 	      /*  ne pas faire les 2 */
-	      /* il faut recalculer les informations de vivacité et de def-use 
+	      /* il faut recalculer les informations de vivacitï¿½ et de def-use
 	         pour pouvoir le faire 2 fois de suite !!
 	      */
 
@@ -150,7 +151,7 @@ int main(int argc, char * argv[]){
 	      cout<<"----- apres renommage ------"<<endl;
 	      bb->display();
 
-	      // il faut annuler le calcul des dépendances et le refaire
+	      // il faut annuler le calcul des dï¿½pendances et le refaire
 	      bb->reset_pred_succ_dep();
 	      bb->comput_pred_succ_dep();
 	      cout<<"---nb_cycles--"<<bb->nb_cycles()<<"-----------"<<endl;
@@ -161,29 +162,29 @@ int main(int argc, char * argv[]){
 	      d->comput_critical_path();
 	      cout<<"critical path "<<d->get_critical_path()<<endl;
 
-	      // creation du DAG en version .dot avec le renommage 
+	      // creation du DAG en version .dot avec le renommage
 	      stringstream sstm2;
 	      sstm2 <<    sstm << "./tmp/" << name << "_func_" << i << "_dfg_bb" << bb->get_index() <<"_renamed.dot";
 	      string str2 = sstm2.str();
 	      cout << str2 << endl;
 	      d->restitute(NULL, str2, true);
 
-	      // scheduling sur le code renommé
+	      // scheduling sur le code renommï¿½
 	      d->scheduling(false);
 	      //cout<<"----  new scheduling: -----"<<endl;
 	      //d->display_sheduled_instr();
 	      d->apply_scheduling();
 	      cout<<"---- BB with new scheduling: -----"<<endl;
 	      bb->display();
-	     
-	      // nombre de cycles du BB après renommage et scheduling 
+
+	      // nombre de cycles du BB aprï¿½s renommage et scheduling
 	      cout<<"----nb_cycles--"<<bb->nb_cycles()<<"-----------"<<endl;
 	      //return 0;
 	   }
 	}
-	    
-	
-	
 
-	
+
+
+
+
 }
