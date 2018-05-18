@@ -1,0 +1,13 @@
+digraph G1 {
+node [shape = box];
+BB0 [label = "main:\laddiu $29,$29,65512\lsw $31,20($29)\lsw $30,16($29)\lor $30,$29,$0\lsw $4,24($30)\lsw $5,28($30)\llui $1,0\lori $4,$1,3\llui $1,0\lori $5,$1,16\llui $1,0\lori $6,$1,8\ljal max\ladd $0,$0,$0\l"] ;
+BB0 -> BB1 [style = filled, label = ""];
+BB1 [label = "or $3,$2,$0\llui $2,%hi($lc0)\laddiu $4,$2,%lo($lc0)\lor $5,$3,$0\ljal printf\ladd $0,$0,$0\l"] ;
+BB1 -> BB2 [style = filled, label = ""];
+BB2 [label = "lui $2,%hi(tab)\laddiu $4,$2,%lo(tab)\llui $1,0\lori $5,$1,7\ljal max_tab\ladd $0,$0,$0\l"] ;
+BB2 -> BB3 [style = filled, label = ""];
+BB3 [label = "or $3,$2,$0\llui $2,%hi($lc0)\laddiu $4,$2,%lo($lc0)\lor $5,$3,$0\ljal printf\ladd $0,$0,$0\l"] ;
+BB3 -> BB4 [style = filled, label = ""];
+BB4 [label = "or $2,$0,$0\lor $29,$30,$0\llw $31,20($29)\llw $30,16($29)\laddiu $29,$29,24\ljr $31\ladd $0,$0,$0\l"] ;
+BB4 -> EXIT  [style = filled, label = ""];
+}

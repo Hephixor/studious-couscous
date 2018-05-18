@@ -1,0 +1,6 @@
+digraph G1 {
+node [shape = ellipse];
+i0 [label = "lw $2,16($30)"] ;
+i0 ->  i1 [label= "RAW_2"];
+i1 [label = "sw $2,0($30)"] ;
+}

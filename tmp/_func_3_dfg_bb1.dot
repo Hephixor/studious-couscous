@@ -1,0 +1,13 @@
+digraph G1 {
+node [shape = ellipse];
+i0 [label = "or $3,$2,$0"] ;
+i0 ->  i1 [label= "WAR"];
+i0 ->  i3 [label= "RAW_1"];
+i1 [label = "lui $2,%hi($lc0)"] ;
+i1 ->  i2 [label= "RAW_1"];
+i2 [label = "addiu $4,$2,%lo($lc0)"] ;
+i2 ->  i4 [label= "control"];
+i4 [label = "jal printf"] ;
+i3 [label = "or $5,$3,$0"] ;
+i3 ->  i4 [label= "control"];
+}
