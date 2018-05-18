@@ -457,10 +457,65 @@ int Basic_block::nb_cycles(){
 
 
    /* A REMPLIR */
+  inst_cycle[0] = 1;
+
+  for(int i=1; i<get_nb_inst(); i++){
+    Instruction* i_instr = get_instruction_at_index(i);
+
+    //cout<<"INSTR ["<<i_instr->get_type()<<"]: i"<<i_instr->get_index();
+    //if(i_instr->get_nb_pred() == 0) cout<<" | pas de DEP"<<endl;
 
 
+    //calcul de max( { cycle(P)+delai(Pij) } ) ou P les dependances de i_instr
+    int max_delay = 0;
+    for(int j=0; j<i_instr->get_nb_pred(); j++){
+      dep* current = i_instr->get_pred_dep(j);
+      int delay = 0;
 
- return 0;
+      //cout<<" | DEP ["<<current->inst->get_type()<<"]: i"<<current->inst->get_index();
+
+
+      if(current->type == RAW){
+        //cout<<" | TYPEDEP: RAW";
+        //cout<<" | DELAY: "<<delai(current->inst->get_type(), i_instr->get_type())<<endl;
+        
+        delay = delai(current->inst->get_type(), i_instr->get_type());
+
+      }
+      else if(current->type == MEMDEP){
+        //cout<<" | TYPEDEP: MEM";
+        //cout<<" | DELAY: 1"<<endl;
+
+        delay = 1;
+
+      }
+      else if(current->type == NONE){
+        cout<<"DEPENDANCE NONE ?????????????????????????????????????????"<<endl;
+      }
+      else{
+        //cout<<" | TYPEDEP: WAR, WAW or CONTROL";
+        //cout<<" | DELAY: 0"<<endl;
+
+        delay = 0;
+
+      }
+      //cout<<" delay_i= "<< inst_cycle[current->inst->get_index()] + delay<<endl;
+      max_delay = max(max_delay, inst_cycle[current->inst->get_index()] + delay);
+
+    }
+
+    //calcul de cycle(i) = max( cycle(i-1)+1, max_delay)
+    inst_cycle[i] = max(inst_cycle[i-1]+1, max_delay);
+
+  }
+
+  cout<<"instr : num cycle de sortie"<<endl;
+  for(int i=1; i<get_nb_inst(); i++){
+    cout<<"i"<<i<<": "<<inst_cycle[i]<<endl;
+  }
+
+
+ return inst_cycle[get_nb_inst()-1];
 }
 
 /* 
