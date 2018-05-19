@@ -67,6 +67,7 @@ int main(int argc, char * argv[]){
 	   cout<<"============================"<<endl;
 
 	   // calcul des registres vivants en entr�e et sortie des BB
+		 cout << "================ Compute liveness ======================" <<endl;
 	   functmp ->compute_live_var();
 	   j=0;
 

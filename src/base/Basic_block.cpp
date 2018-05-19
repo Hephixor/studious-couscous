@@ -531,12 +531,13 @@ void Basic_block::compute_use_def(void){
   Instruction * inst = get_first_instruction();
   if (use_def_done) return;
 
+  cout << "====================== Compute def use ==================== " << endl;
 
   //Use
   for(int i = 0; i < get_nb_inst();i++){
 
     inst = get_instruction_at_index(i);
-cout << inst->to_string();
+    //cout << inst->to_string();
     if(inst->get_reg_dst()!=NULL){
     // cout << "def : " << inst->get_reg_dst()->get_reg()<<endl;
       if(Def[inst->get_reg_dst()->get_reg()]==true){
@@ -587,7 +588,7 @@ cout << inst->to_string();
       }
     }
 
-    cout << endl;
+
 
 
 }

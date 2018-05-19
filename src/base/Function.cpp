@@ -34,7 +34,7 @@ void Function::display(){
 	Line* element = _head;
 	int cpt = 0;
 	if(element == _end)
-		cout << _head->get_content() <<endl;
+	cout << _head->get_content() <<endl;
 
 	while(element != _end){
 		cout << element->get_content() <<endl;
@@ -58,12 +58,12 @@ int Function::size(){
 	{
 		lenght++;
 		if (element->get_next()==_end)
-			break;
+		break;
 		else
-			element = element->get_next();
+		element = element->get_next();
 	}
 	return lenght;
-}	
+}
 
 
 void Function::restitution(string const filename){
@@ -74,22 +74,22 @@ void Function::restitution(string const filename){
 	if(monflux){
 		monflux<<"Begin"<<endl;
 		if(element == _end)
-			monflux << _head->get_content() <<endl;
+		monflux << _head->get_content() <<endl;
 		while(element != _end)
 		{
 			if(element->isInst() ||
-				element->isDirective())
-				monflux<<"\t";
+			element->isDirective())
+			monflux<<"\t";
 
 			monflux << element->get_content() ;
 
 			if(element->get_content().compare("nop"))
-				monflux<<endl;
+			monflux<<endl;
 
 			if(element->get_next()==_end){
 				if(element->get_next()->isInst() ||
-					element->get_next()->isDirective())
-					monflux<<"\t";
+				element->get_next()->isDirective())
+				monflux<<"\t";
 				monflux << element->get_next()->get_content()<<endl;
 				break;
 			}
@@ -111,16 +111,16 @@ void Function::comput_label(){
 	Line* element = _head;
 
 	if(element == _end && element->isLabel())
-		_list_lab.push_back(getLabel(element));
+	_list_lab.push_back(getLabel(element));
 	while(element != _end)
 	{
 
 		if(element->isLabel())
-			_list_lab.push_back(getLabel(element));
+		_list_lab.push_back(getLabel(element));
 
 		if(element->get_next()==_end){
 			if(element->isLabel())
-				_list_lab.push_back(getLabel(element));
+			_list_lab.push_back(getLabel(element));
 			break;
 		}
 		else element = element->get_next();
@@ -142,7 +142,7 @@ Label* Function::get_label(int index){
 	int size=(int) _list_lab.size();
 	if(index< size){
 		for (int i=0; i<index;i++ ) it++;
-			return *it;
+		return *it;
 	}
 	else cout<<"Error get_label : index is bigger than the size of the list"<<endl;
 
@@ -167,7 +167,7 @@ Basic_block *Function::find_label_BB(OPLabel* label){
 
 
 /* ajoute nouveau BB � la liste de BB de la fonction en le creant */
-/* debut est l'entente, fin la derniere ligne du BB, br vaut NULL si le BB ne finit pas par un saut sinon contient la ligne du saut, index est le num�ro du BB */ 
+/* debut est l'entente, fin la derniere ligne du BB, br vaut NULL si le BB ne finit pas par un saut sinon contient la ligne du saut, index est le num�ro du BB */
 
 void Function::add_BB(Line *debut, Line* fin, Line *br, int index){
 	Basic_block *b=new Basic_block();
@@ -181,7 +181,7 @@ void Function::add_BB(Line *debut, Line* fin, Line *br, int index){
 
 //Calcule la liste des blocs de base : il faut d�limiter les BB, en parcourant la liste des lignes (qui contiennent des directives, des labels ou des instructions) � partir de la premiere de la fonction, il faut s'arreter � chaque branchement (et prendre en compte le delayed slot qui appartient au meme BB, c'est l'instruction qui suit tout branchement) ou � chaque label (on estime que tout label est utilis� par un saut et donc correspond bien � une ent�te de BB).
 
-// Pour cr�er un bloc il est conseiller d'utiliser la fonction addBB ci-dessus qui cr�e un BB et l'ajoute � la liste des BB de la fonction 
+// Pour cr�er un bloc il est conseiller d'utiliser la fonction addBB ci-dessus qui cr�e un BB et l'ajoute � la liste des BB de la fonction
 void Function::comput_basic_block(){
 	Line *debut, *current, *prev; // debut contient NULL ou une ent�te, current la ligne en cours de traitement, prev la ligne pr�c�dent current
 	bool verbose = true;
@@ -202,50 +202,50 @@ void Function::comput_basic_block(){
 	current = _head;
 
 	while(current != _end->get_next()){ // il faut traiter la derniere ligne donc il faut s'arr�ter � la suivante!
-		//Si c'est une directive, on passe.
-		if(current->isDirective()){
-			//printf("Found directive, do nothing\n");
-		}
-
-		//Si c'est un label
-		else if(current->isLabel()){
-			//printf("Found Label, do stuff\n");
-			if(debut==NULL){
-				debut = current;
-			}else{
-				add_BB(debut, current->get_prev(),NULL,bb_num);
-				bb_num++;
-				debut=current;
-			}
-		}
-
-		//Si c'est une instruction
-		else if(current->isInst()){
-			if(debut==NULL){
-				//si on n'est pas dans un block (sortie du block precedent par un jump) on cree un bloc
-				debut = current;
-			}	
-			if(getInst(current)->is_branch()){
-				//si jump
-				add_BB(debut,current->get_next(),current,bb_num);
-				bb_num++;
-				debut = NULL;
-				current = current->get_next();
-			}
-		}
-
-		//Ne devrait pas arriver
-		else{
-			//printf("Impossible\n");
-		}
-		current = current->get_next();
+	//Si c'est une directive, on passe.
+	if(current->isDirective()){
+		//printf("Found directive, do nothing\n");
 	}
 
-	if (verbose)
-		cout<<"end comput Basic Block"<<endl;
+	//Si c'est un label
+	else if(current->isLabel()){
+		//printf("Found Label, do stuff\n");
+		if(debut==NULL){
+			debut = current;
+		}else{
+			add_BB(debut, current->get_prev(),NULL,bb_num);
+			bb_num++;
+			debut=current;
+		}
+	}
 
-	BB_computed = true;
-	return;
+	//Si c'est une instruction
+	else if(current->isInst()){
+		if(debut==NULL){
+			//si on n'est pas dans un block (sortie du block precedent par un jump) on cree un bloc
+			debut = current;
+		}
+		if(getInst(current)->is_branch()){
+			//si jump
+			add_BB(debut,current->get_next(),current,bb_num);
+			bb_num++;
+			debut = NULL;
+			current = current->get_next();
+		}
+	}
+
+	//Ne devrait pas arriver
+	else{
+		//printf("Impossible\n");
+	}
+	current = current->get_next();
+}
+
+if (verbose)
+cout<<"end comput Basic Block"<<endl;
+
+BB_computed = true;
+return;
 }
 
 int Function::nbr_BB(){
@@ -260,10 +260,10 @@ Basic_block *Function::get_BB(int index){
 
 	if(index< size){
 		for (int i=0; i<index;i++ ) it++;
-			return *it;
+		return *it;
 	}
 	else
-		return NULL;
+	return NULL;
 }
 
 list<Basic_block*>::iterator Function::bb_list_begin(){
@@ -278,7 +278,7 @@ list<Basic_block*>::iterator Function::bb_list_end(){
 /* et it�rer sur tous les BB d'une fonction */
 /* il faut determiner si un BB a un ou deux successeurs : d�pend de la pr�sence d'un saut pr�sent ou non � la fin */
 /* pas de saut ou saut incontionnel ou appel de fonction : 1 successeur (lequel ?)*/
-/* branchement conditionnel : 2 successeurs */ 
+/* branchement conditionnel : 2 successeurs */
 /* le dernier bloc n'a pas de successeurs - celui qui se termine par jr R31 */
 /* les sauts indirects n'ont pas de successeur */
 
@@ -302,24 +302,24 @@ void Function::comput_succ_pred_BB(){
 		current = get_BB(i);
 		cout << "checking successor for block" << i << endl;
 
-	//Cas branchement
+		//Cas branchement
 		if(current->get_branch()!=NULL){
 			instr = getInst(current->get_branch());
 
 			//Cas saut conditionnel
 			if(instr->is_cond_branch()){
-	//			cout << "Cond branch " << endl;
+				//			cout << "Cond branch " << endl;
 				if(getInst(current->get_branch())->get_op_label()!=NULL){
-						//Sucesseur branchment
-				//	cout << "Block " << i << " branched to " << (getInst(current->get_branch())->get_op_label())->get_op() ;
+					//Sucesseur branchment
+					//	cout << "Block " << i << " branched to " << (getInst(current->get_branch())->get_op_label())->get_op() ;
 					succ = find_label_BB(getInst(current->get_branch())->get_op_label());
 					current->set_link_succ_pred(succ);
 
-		//			cout << "succ BB " << succ->get_index() << endl ;
-						//Successeur sequence
+					//			cout << "succ BB " << succ->get_index() << endl ;
+					//Successeur sequence
 					if(get_BB(i+1)!=NULL){
 						current->set_link_succ_pred(get_BB(i+1));
-		//				cout << "succ BB " << get_BB(i+1)->get_index() << endl ;
+						//				cout << "succ BB " << get_BB(i+1)->get_index() << endl ;
 					}
 				}
 			}
@@ -328,16 +328,16 @@ void Function::comput_succ_pred_BB(){
 			//Cas saut indirect
 			else if(instr->is_indirect_branch()){
 				//Rien a faire
-			//	cout << " indirect Cond branch " << endl;
-			//	cout << "no succ" << endl ;
+				//	cout << " indirect Cond branch " << endl;
+				//	cout << "no succ" << endl ;
 			}
 
 			//Cas call function
 			else if(instr->is_call()){
-		//		cout << "call branch " << endl;
+				//		cout << "call branch " << endl;
 				if(get_BB(i+1)!=NULL){
 					current->set_link_succ_pred(get_BB(i+1));
-			//		cout << "succ BB " << (get_BB(i+1))->get_index() << endl ;
+					//		cout << "succ BB " << (get_BB(i+1))->get_index() << endl ;
 				}
 			}
 
@@ -345,10 +345,10 @@ void Function::comput_succ_pred_BB(){
 			//if(instr->is_incond_branch())
 			else if(getInst(current->get_branch())->get_op_label()!=NULL){
 				//cout << "inconditionnal branch " << endl;
-						//Sucesseur branchment
+				//Sucesseur branchment
 				//	cout << "Block " << i << " branched to " << (getInst(current->get_branch())->get_op_label())->get_op() ;
-					succ = find_label_BB(getInst(current->get_branch())->get_op_label());
-					current->set_link_succ_pred(succ);
+				succ = find_label_BB(getInst(current->get_branch())->get_op_label());
+				current->set_link_succ_pred(succ);
 				//	cout << "succ BB " << succ->get_index() << endl ;
 			}
 
@@ -363,9 +363,9 @@ void Function::comput_succ_pred_BB(){
 
 		//Pas de branchement
 		else if(get_BB(i+1)!=NULL){
-		//	cout << "no branch : follower " << endl;
+			//	cout << "no branch : follower " << endl;
 			current->set_link_succ_pred(get_BB(i+1));
-		//	cout << "succ BB " << (get_BB(i+1))->get_index() << endl ;
+			//	cout << "succ BB " << (get_BB(i+1))->get_index() << endl ;
 		}
 
 		else{
@@ -376,8 +376,8 @@ void Function::comput_succ_pred_BB(){
 
 
 	// ne pas toucher ci-dessous
-BB_pred_succ = true;
-return;
+	BB_pred_succ = true;
+	return;
 }
 
 void Function::compute_dom(){
@@ -414,9 +414,9 @@ void Function::compute_dom(){
 
 	//for  each n in  N−{r}  do
 	for (int j=0; j< nbBB; j++){
-			//Domin(n) := N
-			get_BB(j)->Domin.assign(nbBB, true);
-		}
+		//Domin(n) := N
+		get_BB(j)->Domin.assign(nbBB, true);
+	}
 
 	//do while  (WorkingList <> empty)
 	while(!workinglist.empty()){
@@ -431,96 +431,96 @@ void Function::compute_dom(){
 
 
 		if (current -> get_nb_pred() == 0){
-		//Domin(r) = {}.       note : la racine se domine soi-meme
+			//Domin(r) = {}.       note : la racine se domine soi-meme
 			current->Domin.assign(nbBB, false);
 			current->Domin[current->get_index()] = true;
 			change = true;
-		}	
+		}
 		else {
-		//T := N
+			//T := N
 			std::vector<bool> temp;
 			temp.assign(nbBB, true);
 
 			//for each p in Pred(n) do
-    		for(int j=0; j< current->get_nb_pred(); j++){
-    			for (int k=0; k< nbBB; k++){
-    				temp[k] = temp[k] && current->get_predecessor(j)->Domin[k];
-    			}	
-    		}
+			for(int j=0; j< current->get_nb_pred(); j++){
+				for (int k=0; k< nbBB; k++){
+					temp[k] = temp[k] && current->get_predecessor(j)->Domin[k];
+				}
+			}
 
 			/*debug ="";
-			for(int k=0; k< nbBB; k++) { 
-				debug+= current->Domin[k] ? "true" : "false";
-		 		debug+=" ";
-			}
-			std::cout << "DEBUG CURRENT: " << debug << '\n';
-
-			debug ="";
-			for(int k=0; k< nbBB; k++) { 
-				debug+= temp[k] ? "true" : "false";
-		 		debug+=" ";
-			}
-			std::cout << "DEBUG TEMP   : " << debug << '\n';*/
-
-
-    		//T +:= Domin(p)
-    		for (int k=0; k< nbBB; k++){
-    			temp[k] = temp[k] && current->Domin[k];
-    		}
-
-    		/*debug ="";
-			for(int k=0; k< nbBB; k++) { 
-				debug+= temp[k] ? "true" : "false";
-		 		debug+=" ";
-			}
-			std::cout << "DEBUG TEMP   : " << debug << '\n';
-
-    		std::cout << "TAILLEDOM: " << temp.size() << '\n';*/
-
-    		//D := T + {n}
-    		temp[current->get_index()] = true;
-
-    		//if D <> Domin(n) then
-    		for(int k=0; k<nbBB; k++){
-    			if(temp[k] != current->Domin[k]){
-    				change = true;
-    				current->Domin[k] = temp[k];
-    			}
-    		}
-		}		
-
-    	if (change){
-			if (current->get_nb_succ()==1){
-				workinglist.push_back(current->get_successor1());
-			}
-			else if (current->get_nb_succ()== 2){
-				workinglist.push_back(current->get_successor1());
-				workinglist.push_back(current->get_successor2());
-			
-			}
-		
-		}	
-		change = false;
-	}
-
-	/*========================= FIN ALGO DU COURS ==============================*/
-
-
-	// affichage du resultat
-	list<Basic_block*>::iterator it; // iterateur
-	it=_myBB.begin();
-
-	for (int j=0; j< nbBB; j++){
-		current = *it;
-		cout << "Dominants pour BB" << current -> get_index() << " : ";
-		for (int i = 0; i< nbr_BB(); i++){
-			if (current->Domin[i]) cout << " BB" << i  ;
+			for(int k=0; k< nbBB; k++) {
+			debug+= current->Domin[k] ? "true" : "false";
+			debug+=" ";
 		}
-		cout << endl;
-		it++;
+		std::cout << "DEBUG CURRENT: " << debug << '\n';
+
+		debug ="";
+		for(int k=0; k< nbBB; k++) {
+		debug+= temp[k] ? "true" : "false";
+		debug+=" ";
 	}
-	dom_computed = true;
-	return;
+	std::cout << "DEBUG TEMP   : " << debug << '\n';*/
+
+
+	//T +:= Domin(p)
+	for (int k=0; k< nbBB; k++){
+		temp[k] = temp[k] && current->Domin[k];
+	}
+
+	/*debug ="";
+	for(int k=0; k< nbBB; k++) {
+	debug+= temp[k] ? "true" : "false";
+	debug+=" ";
+}
+std::cout << "DEBUG TEMP   : " << debug << '\n';
+
+std::cout << "TAILLEDOM: " << temp.size() << '\n';*/
+
+//D := T + {n}
+temp[current->get_index()] = true;
+
+//if D <> Domin(n) then
+for(int k=0; k<nbBB; k++){
+	if(temp[k] != current->Domin[k]){
+		change = true;
+		current->Domin[k] = temp[k];
+	}
+}
+}
+
+if (change){
+	if (current->get_nb_succ()==1){
+		workinglist.push_back(current->get_successor1());
+	}
+	else if (current->get_nb_succ()== 2){
+		workinglist.push_back(current->get_successor1());
+		workinglist.push_back(current->get_successor2());
+
+	}
+
+}
+change = false;
+}
+
+/*========================= FIN ALGO DU COURS ==============================*/
+
+
+// affichage du resultat
+list<Basic_block*>::iterator it; // iterateur
+it=_myBB.begin();
+
+for (int j=0; j< nbBB; j++){
+	current = *it;
+	cout << "Dominants pour BB" << current -> get_index() << " : ";
+	for (int i = 0; i< nbr_BB(); i++){
+		if (current->Domin[i]) cout << " BB" << i  ;
+	}
+	cout << endl;
+	it++;
+}
+dom_computed = true;
+return;
 }
 
 void Function::compute_live_var(){
@@ -529,6 +529,54 @@ void Function::compute_live_var(){
 	Basic_block *current, *bb, *pred;
 	bool change = true;
 	int nbBB= (int) _myBB.size();
+
+	for(int i = 0 ; i < nbBB;i++){
+		workinglist.push_back(get_BB(i));
+	}
+
+	for(int i = nbBB-1 ; i >= 0 ;i--){
+
+		current = get_BB(i);
+		current->compute_use_def();
+
+		if(current->get_nb_succ() == 0){
+			for(int j = 0 ; j < NB_REG; j++){
+				if(current->Use[j]==true){
+					current->LiveIn[j]=true;
+					get_BB(i-1)->LiveOut[j]=true;
+				}
+			}
+		}
+
+		else{
+			for(int j = 0 ; j < NB_REG; j++){
+				if(get_BB(i+1)->LiveIn[j]==true){
+					current->LiveOut[j]=true;
+				}
+			}
+
+			for(int j = 0 ; j < NB_REG; j++){
+				if(current->LiveOut[j]==true && current->Def[j]==false){
+					current->LiveIn[j]=true;
+				}
+
+				if(current->Use[j]==true){
+					current->LiveIn[j]=true;
+				}
+			}
+
+		}
+
+		cout << "nb succ " << current->get_nb_succ() << endl;
+
+		//Cas dernier bloc retour main ou fonction si indirect jump
+		current = get_BB(nbBB-1);
+		if(current->get_instruction_at_index(current->get_nb_inst()-2)->is_indirect_branch()){
+			current->LiveOut[2]=true;
+		}
+
+	}
+
 
 
 
@@ -563,7 +611,7 @@ void Function::compute_live_var(){
 
 
 
-/* en implementant la fonction test de la classe BB, permet de tester des choses sur tous les blocs de base d'une fonction par exemple l'affichage de tous les BB d'une fonction ou l'affichage des succ/pred des BBs comme c'est le cas -- voir la classe Basic_block et la m�thode test */
+	/* en implementant la fonction test de la classe BB, permet de tester des choses sur tous les blocs de base d'une fonction par exemple l'affichage de tous les BB d'une fonction ou l'affichage des succ/pred des BBs comme c'est le cas -- voir la classe Basic_block et la m�thode test */
 
 	void Function::test(){
 		int size=(int)_myBB.size();
