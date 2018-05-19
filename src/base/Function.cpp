@@ -573,6 +573,7 @@ void Function::compute_live_var(){
 		current = get_BB(nbBB-1);
 		if(current->get_instruction_at_index(current->get_nb_inst()-2)->is_indirect_branch()){
 			current->LiveOut[2]=true;
+			current->LiveOut[29]=true;
 		}
 
 	}
