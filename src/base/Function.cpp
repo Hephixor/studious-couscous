@@ -582,7 +582,9 @@ void Function::compute_live_var(){
 
 
 	/* A REMPLIR avec algo vu en cours et en TD*/
-	/* algorithme it�ratif qui part des blocs sans successeur, ne pas oublier que lorsque l'on sort d'une fonction le registre $2 contient le r�sultat (il est donc vivant), le registre pointeur de pile ($29) est aussi vivant ! */
+	/* algorithme it�ratif qui part des blocs sans successeur, ne pas oublier que 
+	lorsque l'on sort d'une fonction le registre $2 contient le r�sultat *
+	(il est donc vivant), le registre pointeur de pile ($29) est aussi vivant ! */
 
 
 	// Affichage du resultat

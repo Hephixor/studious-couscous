@@ -624,19 +624,42 @@ Si $i est défini plusieurs fois c'est l'instruction avec l'index le plus grand
 *****/
 void Basic_block::compute_def_liveout(){
 
-  Instruction * inst = get_first_instruction();
-
   /* A REMPLIR */
 
+  //pour tous les registres
+  for(int i=0; i<NB_REG; i++){
+
+    //si le registre i est vivant en sortie de bloc
+    // et s'il est defini dans une des instructions du bloc
+    if(this->LiveOut[i] && this->Def[i]){
+
+      Instruction * inst = get_first_instruction();
+
+      //pour toutes les instructions du bloc
+      while(inst != NULL){
+
+        //si l'instruction definit le registre i
+        if(inst->get_reg_dst()!=NULL && inst->get_reg_dst()->get_reg()==i){
+          //alors on ajoute l'index de l'instruction a la case DefLiveOut[i].
+          //l'index de la derniere instruction a definir le registre sera conserve.
+          this->DefLiveOut[i] = inst->get_index();
+        }
+
+        inst = inst->get_next();
+      }
+
+    }   
+  }
+
+
   #ifdef DEBUG
-  cout << "DEF LIVE OUT: " ;
+  cout << "DEF LIVE OUT: "<<endl ;
   for(int i=0; i<NB_REG; i++){
     if (DefLiveOut[i] != -1)
-    cout << "$"<< i << " definit par i" << DefLiveOut[i] << endl;
+    cout << "$"<< i << " defini par i" << DefLiveOut[i] << endl;
   }
 
   #endif
-
 }
 
 
