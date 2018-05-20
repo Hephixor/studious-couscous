@@ -190,7 +190,7 @@ void Function::comput_basic_block(){
 	Line *l = NULL;
 	Instruction *i = NULL;
 
-	cout << "comput BB" <<endl;
+
 	if (verbose){
 		cout<<" head:"<< _head->get_content()<<endl;
 		cout<<" tail:"<< _end->get_content()<<endl;
@@ -242,7 +242,7 @@ void Function::comput_basic_block(){
 }
 
 if (verbose)
-cout<<"end comput Basic Block"<<endl;
+
 
 BB_computed = true;
 return;
@@ -300,7 +300,6 @@ void Function::comput_succ_pred_BB(){
 	int size=(int)_myBB.size();
 	for(int i=0;i<size; i++){
 		current = get_BB(i);
-		cout << "checking successor for block" << i << endl;
 
 		//Cas branchement
 		if(current->get_branch()!=NULL){
@@ -308,7 +307,7 @@ void Function::comput_succ_pred_BB(){
 
 			//Cas saut conditionnel
 			if(instr->is_cond_branch()){
-				//			cout << "Cond branch " << endl;
+
 				if(getInst(current->get_branch())->get_op_label()!=NULL){
 					//Sucesseur branchment
 					//	cout << "Block " << i << " branched to " << (getInst(current->get_branch())->get_op_label())->get_op() ;
@@ -532,7 +531,7 @@ void Function::compute_live_var(){
 
 
 	/* A REMPLIR avec algo vu en cours et en TD*/
-	/* algorithme it�ratif qui part des blocs sans successeur, ne pas oublier que 
+	/* algorithme it�ratif qui part des blocs sans successeur, ne pas oublier que
 	lorsque l'on sort d'une fonction le registre $2 contient le r�sultat *
 	(il est donc vivant), le registre pointeur de pile ($29) est aussi vivant ! */
 
@@ -549,8 +548,8 @@ void Function::compute_live_var(){
 
 	//TANT QU' il y a des changements dans un livein ou liveout d'un des blocs.
 	//(ca oblige faire un dernier tour de calcul sans changement...)
-	//(ca oblige aussi a tout recalculer dans les cas particulier ou la boucle 
-	// n'est que sur un seul bloc (pas efficace) mais ca englobe le cas generique 
+	//(ca oblige aussi a tout recalculer dans les cas particulier ou la boucle
+	// n'est que sur un seul bloc (pas efficace) mais ca englobe le cas generique
 	// ou la boucle contient plusieurs blocs))
 	while(change){
 
@@ -584,7 +583,7 @@ void Function::compute_live_var(){
 			//deux successeurs
 			else if(current->get_nb_succ() == 2){
 				for(int j=0; j<NB_REG; j++){
-					current->LiveOut[j] = 
+					current->LiveOut[j] =
 						current->get_successor1()->LiveIn[j]
 						||
 						current->get_successor2()->LiveIn[j];

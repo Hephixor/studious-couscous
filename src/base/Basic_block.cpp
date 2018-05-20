@@ -366,38 +366,38 @@ void Basic_block::comput_pred_succ_dep(){
 
       //dep RAW1
       if(i_current->is_dep_RAW1(get_instruction_at_index(j))){
-        cout << i << " raw " << j << " RAW1" <<endl;
+        cout <<"i"<< i << " RAW1 " << "i"<< j <<endl;
         add_dep_link(i_current,get_instruction_at_index(j),RAW);
       }
 
       //dep RAW2
       if(i_current->is_dep_RAW2(get_instruction_at_index(j))){
-        cout << i << " raw " << j << " RAW2" <<endl;
+        cout <<"i"<< i << " RAW2 " << "i"<< j <<endl;
         add_dep_link(i_current,get_instruction_at_index(j),RAW);
       }
 
       //dep WAR1
       if(i_current->is_dep_WAR1(get_instruction_at_index(j))){
-        cout << i << " raw " << j << " WAR1" <<endl;
+        cout <<"i"<< i << " WAR1 " << "i"<< j <<endl;
         add_dep_link(i_current,get_instruction_at_index(j),WAR);
       }
 
       //dep WAR2
       if(i_current->is_dep_WAR2(get_instruction_at_index(j))){
-        cout << i << " raw " << j << " WAR2" <<endl;
+        cout <<"i"<< i << " WAR2 " << "i"<< j <<endl;
         add_dep_link(i_current,get_instruction_at_index(j),WAR);
       }
 
       //dep MEM
       if(i_current->is_dep_MEM(get_instruction_at_index(j))){
-        cout << i << " mem " << j <<endl;
+        cout <<"i"<< i << " MEM " << "i"<< j <<endl;
         add_dep_link(i_current,get_instruction_at_index(j),MEMDEP);
       }
 
 
       //si dep WAW, on arrete
       if(i_current->is_dep_WAW(get_instruction_at_index(j))){
-        cout << i << " waw " << j << " WAW : break" <<endl;
+        cout <<"i"<< i << " WAW " << "i"<< j <<endl;
         break;
       }
 
@@ -524,9 +524,6 @@ ne pas oublier les conventions d'appel : les registres $4, $5, $6, $7 peuvent co
 void Basic_block::compute_use_def(void){
   Instruction * inst = get_first_instruction();
   if (use_def_done) return;
-
-  cout << "====================== Compute def use ==================== " << endl;
-
   //Use
   for(int i = 0; i < get_nb_inst();i++){
 
