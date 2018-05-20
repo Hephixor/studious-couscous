@@ -4,26 +4,26 @@
 
 #define NB_REG 32
 #define NB_MAX_BB 32
-/**	\brief	Type enum which take the type of the operand			
+/**	\brief	Type enum which take the type of the operand
 */
 	enum t_OpType {Imm,Exp,Lab,Reg,};
 
-/**	\brief	Type enum which take the format of the instructions			
+/**	\brief	Type enum which take the format of the instructions
 */
 	enum  t_Format {J, I, R, O, B};
 
-/**	\brief	Type enum which take the type of the instructions			
+/**	\brief	Type enum which take the type of the instructions
 */
 	enum t_Inst {ALU, MEM, BR, OTHER, BAD};
 
-/**	\brief	Type enum which take the Operator of the instructions			
+/**	\brief	Type enum which take the Operator of the instructions
 */
 	// !!WARNING!! :If you add new Operators, dont forget to report their caracteristics in op_profile with the same order !!
 	enum t_Operator{
 	b,	beqz,	bnez,	beq,	bgez,	bgezal,
 	bgtz,	blez,	bltz,	bltzal,	bne,	j,
-	jal,	jalr,	jr,	la,	li,	loadi,	
-	sb,	sh,	lb,	lbu,	lh,	lhu,	
+	jal,	jalr,	jr,	la,	li,	loadi,
+	sb,	sh,	lb,	lbu,	lh,	lhu,
 	lui,	lw,	lwl,	lwr,	ll,	pref,
 	sw,	add,
 	addu,	addi,	addiu,	and_,	andi,	mul,
@@ -34,12 +34,12 @@
 	mtlo,	move,	neg,	negu,	nop,	break_,
 	syscallu,mfc0,	mtc0,	clo,	clz,	ebase,
 	eepc,	eret,	madd,	maddu,	mfc2,
-	movn,	movz,	msub,	msubu,	mtc2,	
+	movn,	movz,	msub,	msubu,	mtc2,
 	sc,		sync_,	tccontext,teq,	teqi,	tge,
 	tgei,	tgeiu,	tgeu,	tlt,	 tlti,	tltiu,
 	tltu,	tne,	tnei,	waitn,	rfe,	maxop};
 
-/**	\brief	Type enum which take the type of dependance			
+/**	\brief	Type enum which take the type of dependance
 */
 enum t_Dep {NONE, RAW, WAR, WAW, MEMDEP, CONTROL};
 
@@ -157,11 +157,11 @@ enum t_Dep {NONE, RAW, WAR, WAW, MEMDEP, CONTROL};
 	};
 
 
-/**	\brief	Type enum which take the type of the line			
+/**	\brief	Type enum which take the type of the line
 */
 	enum t_Line {line_Instru,line_Lab,line_Direct};
 
-/**	\brief	Type enum which takes the type of the register			
+/**	\brief	Type enum which takes the type of the register
 */
 	enum t_Src_Dst {Src,Dst,CopSrc,CopDst} ;
 
@@ -169,8 +169,8 @@ enum t_Dep {NONE, RAW, WAR, WAW, MEMDEP, CONTROL};
 #define WAW_DELAY 0
 #define WAR_DELAY 0
 #define MEMDEP_DELAY 1
- 
-/** 	\brief	Gives the delay between two instructions, in case of RAW dependance , according to their type -- ALU, MEM or BR 			
+
+/** 	\brief	Gives the delay between two instructions, in case of RAW dependance , according to their type -- ALU, MEM or BR
 */
 /*
 Conso    ALU MEM BR OTHER BAD
@@ -179,19 +179,19 @@ ALU      1   1   2  -1   -1
 MEM      2   2   3   -1   -1
 BR       1   1   2   -1   -1
 OTHER   -1   -1  -1  -1   -1
-BAD     -1   -1  -1  -1   -1  
+BAD     -1   -1  -1  -1   -1
 
-*/ 
+*/
 
-static int t_delay[5][5]={
-   {1,1,2,-1,-1},
-   {2,2,3,-1,-1},
-   {1,1,2,-1,-1},
-   {-1,-1,-1,-1,-1},
-   {-1,-1,-1,-1,-1}
-};
+// static int t_delay[5][5]={
+//    {1,1,2,-1,-1},
+//    {2,2,3,-1,-1},
+//    {1,1,2,-1,-1},
+//    {-1,-1,-1,-1,-1},
+//    {-1,-1,-1,-1,-1}
+// };
 
-// A TESTER AUSSI 
+// A TESTER AUSSI
 
 /*
 Conso    ALU MEM BR OTHER BAD
@@ -200,21 +200,17 @@ ALU      2   2   3  -1   -1
 MEM      3   3   4   -1   -1
 BR       2   2   3   -1   -1
 OTHER   -1   -1  -1  -1   -1
-BAD     -1   -1  -1  -1   -1  
+BAD     -1   -1  -1  -1   -1
 
-*/ 
+*/
 
 
-/* static int t_delay[5][5]={
+ static int t_delay[5][5]={
    {2,2,3,-1,-1},
    {3,3,4,-1,-1},
    {2,2,3,-1,-1},
    {-1,-1,-1,-1,-1},
    {-1,-1,-1,-1,-1}
 };
-*/ 
+
 #endif
-
- 
-  
-

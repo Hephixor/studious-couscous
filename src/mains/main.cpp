@@ -80,6 +80,10 @@ int main(int argc, char * argv[]){
      for(itbb=functmp->bb_list_begin();
          itbb!=functmp->bb_list_end(); itbb++, j++){
 
+        int corig;
+        int crename;
+        int cschedule;
+
        bb=*itbb;
        cout<<"================ BB "<<j<<" =================================\n"<<endl;
 
@@ -95,6 +99,7 @@ int main(int argc, char * argv[]){
         /**************** CALCUL NB CYCLES *********************/
         //affichage du nb de cycle pour l'execution du BB
         cout<<"\n---nb_cycles : "<<bb->nb_cycles()<<"-----------\n"<<endl;
+        corig=bb->nb_cycles();
 
         // creation du DAG de d�pendance associ� au BB
         d = new Dfg(bb);
@@ -138,16 +143,16 @@ int main(int argc, char * argv[]){
 
         // liste de registres pour le renommage
         // avec des registres pass�ees en param�tre
-        /*
+
         frees.clear();
         for(int k=32; k<64; k++){
            frees.push_back(k);
         }
-        */
+
 
         /* renommage en utilisant des registres n'existant pas */
 
-        //  bb->reg_rename(&frees);
+        bb->reg_rename(&frees);
 
         /* renommage utilisant les registres disponibles dans le bloc */
         /*  ne pas faire les 2 */
@@ -155,7 +160,7 @@ int main(int argc, char * argv[]){
            pour pouvoir le faire 2 fois de suite !!
         */
 
-        bb->reg_rename();
+      //  bb->reg_rename();
         cout<<"\n----- apres renommage ------\n"<<endl;
         bb->display();
 
@@ -166,7 +171,7 @@ int main(int argc, char * argv[]){
         bb->comput_pred_succ_dep();
 
         cout<<"---nb_cycles--"<<bb->nb_cycles()<<"-----------"<<endl;
-
+        crename=bb->nb_cycles();
         d= new Dfg(bb);
         cout<<"================ Compute critical path =====================\n"<<endl;
         //d->restitute(NULL, "./tmp/graph_dfg1.dot", true);
@@ -185,12 +190,17 @@ int main(int argc, char * argv[]){
         cout<<"----  new scheduling: -----"<<endl;
         d->display_sheduled_instr();
         d->apply_scheduling();
-        cout<<"---- BB with new scheduling: -----\n"<<endl;
-        bb->display();
+        // cout<<"---- BB with new scheduling: -----\n"<<endl;
+        // bb->display();
 
         // nombre de cycles du BB apr�s renommage et scheduling
         cout<<"----nb_cycles--"<<bb->nb_cycles()<<"-----------\n"<<endl;
+        cschedule = bb->nb_cycles();
         //return 0;
+        cout << "Default           cycles : " << corig << endl;
+        cout << "Rename            cycles : " << crename << endl;
+        cout << "Rename & schedule cycles : " << cschedule << endl;
+
      }
   }
 
