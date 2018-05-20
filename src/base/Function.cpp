@@ -530,61 +530,79 @@ void Function::compute_live_var(){
 	bool change = true;
 	int nbBB= (int) _myBB.size();
 
-	for(int i = 0 ; i < nbBB;i++){
-		workinglist.push_back(get_BB(i));
-	}
-
-	for(int i = nbBB-1 ; i >= 0 ;i--){
-
-		current = get_BB(i);
-		current->compute_use_def();
-
-		if(current->get_nb_succ() == 0){
-			for(int j = 0 ; j < NB_REG; j++){
-				if(current->Use[j]==true){
-					current->LiveIn[j]=true;
-					get_BB(i-1)->LiveOut[j]=true;
-				}
-			}
-		}
-
-		else{
-			for(int j = 0 ; j < NB_REG; j++){
-				if(get_BB(i+1)->LiveIn[j]==true){
-					current->LiveOut[j]=true;
-				}
-			}
-
-			for(int j = 0 ; j < NB_REG; j++){
-				if(current->LiveOut[j]==true && current->Def[j]==false){
-					current->LiveIn[j]=true;
-				}
-
-				if(current->Use[j]==true){
-					current->LiveIn[j]=true;
-				}
-			}
-
-		}
-
-		cout << "nb succ " << current->get_nb_succ() << endl;
-
-		//Cas dernier bloc retour main ou fonction si indirect jump
-		current = get_BB(nbBB-1);
-		if(current->get_instruction_at_index(current->get_nb_inst()-2)->is_indirect_branch()){
-			current->LiveOut[2]=true;
-			current->LiveOut[29]=true;
-		}
-
-	}
-
-
-
 
 	/* A REMPLIR avec algo vu en cours et en TD*/
 	/* algorithme it�ratif qui part des blocs sans successeur, ne pas oublier que 
 	lorsque l'on sort d'une fonction le registre $2 contient le r�sultat *
 	(il est donc vivant), le registre pointeur de pile ($29) est aussi vivant ! */
+
+
+	//on calcule les tableaux Def et Use de chaque BB
+	for(int i = 0 ; i < nbBB;i++){
+		get_BB(i)->compute_use_def();
+	}
+
+	//tableaux copies de LiveIn et LiveOut pour voir s'il y a des changements.
+	vector<bool> LiveInPrec;
+	vector<bool> LiveOutPrec;
+
+
+	//tant qu'il y a des changements dans un livein ou liveout d'un des blocs
+	//(obligation de faire un dernier tour de calcul sans changement...)
+	while(change){
+
+		//pour tous les blocs, en partant du dernier bloc et en remontant.
+		for(int i = nbBB-1 ; i >= 0 ;i--){
+			current = get_BB(i);
+			//copie LiveIn LiveOut avant calcul
+			LiveInPrec.assign(current->LiveIn.begin(), current->LiveIn.end());
+			LiveOutPrec.assign(current->LiveOut.begin(), current->LiveOut.end());
+
+			cout << "BB"<< i <<" nb succ :" << current->get_nb_succ() << endl;
+
+			/*Calcul LiveOut du bloc*/
+
+			//pas de successeur
+			if(current->get_nb_succ() == 0){
+				//Cas du bloc retour de la fonction (indirect jump)
+				if(current->get_instruction_at_index(current->get_nb_inst()-2)->is_indirect_branch()){
+					current->LiveOut[2]=true;
+					current->LiveOut[29]=true;
+				}
+			}
+			//un successeur
+			else if(current->get_nb_succ() == 1){
+				for(int j=0; j<NB_REG; j++){
+					current->LiveOut[j] = current->get_successor1()->LiveIn[j];
+				}
+			}
+			//deux successeurs
+			else if(current->get_nb_succ() == 2){
+				for(int j=0; j<NB_REG; j++){
+					current->LiveOut[j] = 
+						current->get_successor1()->LiveIn[j]
+						||
+						current->get_successor2()->LiveIn[j];
+				}
+			}
+
+			/*Calcul LiveIn du bloc*/
+			for(int j=0; j<NB_REG; j++){
+				current->LiveIn[j] = current->LiveOut[j];
+				if(current->Def[j]) current->LiveIn[j] = false;
+				current->LiveIn[j] = current->LiveIn[j] || current->Use[j];
+			}
+
+			/*verification si changement dans LiveIn LiveOut entre avant calcul et apres*/
+			change = false;
+			for(int j=0; j<NB_REG; j++){
+				if(current->LiveIn[j] != LiveInPrec[j] || current->LiveOut[j] != LiveOutPrec[j])
+					change = true;
+			}
+		}
+	}
+
+
 
 
 	// Affichage du resultat
