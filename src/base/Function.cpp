@@ -547,18 +547,23 @@ void Function::compute_live_var(){
 	vector<bool> LiveOutPrec;
 
 
-	//tant qu'il y a des changements dans un livein ou liveout d'un des blocs
-	//(obligation de faire un dernier tour de calcul sans changement...)
+	//TANT QU' il y a des changements dans un livein ou liveout d'un des blocs.
+	//(ca oblige faire un dernier tour de calcul sans changement...)
+	//(ca oblige aussi a tout recalculer dans les cas particulier ou la boucle 
+	// n'est que sur un seul bloc (pas efficace) mais ca englobe le cas generique 
+	// ou la boucle contient plusieurs blocs))
 	while(change){
 
 		//pour tous les blocs, en partant du dernier bloc et en remontant.
 		for(int i = nbBB-1 ; i >= 0 ;i--){
 			current = get_BB(i);
+			//cout << "BB"<< i <<" nb succ :" << current->get_nb_succ() << endl;
+
+
 			//copie LiveIn LiveOut avant calcul
 			LiveInPrec.assign(current->LiveIn.begin(), current->LiveIn.end());
 			LiveOutPrec.assign(current->LiveOut.begin(), current->LiveOut.end());
 
-			cout << "BB"<< i <<" nb succ :" << current->get_nb_succ() << endl;
 
 			/*Calcul LiveOut du bloc*/
 
