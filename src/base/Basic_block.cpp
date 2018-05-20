@@ -462,18 +462,12 @@ int Basic_block::nb_cycles(){
   for(int i=1; i<get_nb_inst(); i++){
     Instruction* i_instr = get_instruction_at_index(i);
 
-    //cout<<"INSTR ["<<i_instr->get_type()<<"]: i"<<i_instr->get_index();
-    //if(i_instr->get_nb_pred() == 0) cout<<" | pas de DEP"<<endl;
-
-
     //calcul de max( { cycle(P)+delai(Pij) } ) ou P les dependances de i_instr
     int max_delay = 0;
+    
     for(int j=0; j<i_instr->get_nb_pred(); j++){
       dep* current = i_instr->get_pred_dep(j);
       int delay = 0;
-
-      //cout<<" | DEP ["<<current->inst->get_type()<<"]: i"<<current->inst->get_index();
-
 
       if(current->type == RAW){
         //cout<<" | TYPEDEP: RAW";
@@ -629,9 +623,9 @@ void Basic_block::compute_def_liveout(){
   //pour tous les registres
   for(int i=0; i<NB_REG; i++){
 
-    //si le registre i est vivant en sortie de bloc
-    // et s'il est defini dans une des instructions du bloc
-    if(this->LiveOut[i] && this->Def[i]){
+    //si le registre i est defini dans une des instructions du bloc
+    // et s'il est vivant en sortie de bloc
+    if(this->Def[i] && this->LiveOut[i]){
 
       Instruction * inst = get_first_instruction();
 
@@ -675,6 +669,56 @@ void Basic_block::reg_rename(list<int> *frees){
 
   /* A REMPLIR */
 
+  list<int> renommables;
+
+  //boucle pour trouver les registres renommables.
+  for(int i =0; i< NB_REG; i++){
+
+    //si le registre est defini dans le bloc mais est mort en sortie du bloc
+    if(this->Def[i] && !(this->LiveOut[i])){
+      //ajout du registre a la liste des registres renommables
+      renommables.push_back(i);
+    }
+  }
+
+  //boucle de renommage.
+  while( !(renommables.empty()) ){
+    int reg_a_renommer = renommables.front();
+    renommables.pop_front();
+
+    int reg_nouv_nom = frees->front();
+    frees->pop_front();
+
+    //on trouve la 1e definition du registre a renommer
+    inst = get_first_instruction();
+    while( !(inst->get_reg_dst()!=NULL && 
+             inst->get_reg_dst()->get_reg()==reg_a_renommer) ){
+      inst = inst->get_next();
+    }
+
+    //une fois trouve, on renomme le registre dans sa defition.
+    inst->get_reg_dst()->set_reg(reg_nouv_nom);
+
+    //puis on renomme les utilisations ulterieures 
+    //jusqu'a la fin du BB ou la prochaine definition du registre (voir 3e if)
+    inst = inst->get_next();
+    while(inst != NULL){
+      if(inst->get_reg_src1()!=NULL && inst->get_reg_src1()->get_reg()==reg_a_renommer){
+        inst->get_reg_src1()->set_reg(reg_nouv_nom);
+      }
+      if(inst->get_reg_src2()!=NULL && inst->get_reg_src2()->get_reg()==reg_a_renommer){
+        inst->get_reg_src2()->set_reg(reg_nouv_nom);
+      }
+
+      //(on verifie le registre que definit l'instr apres ceux qu'elle utilise)
+      if(inst->get_reg_dst()!=NULL && inst->get_reg_dst()->get_reg()==reg_a_renommer){
+        break;
+      }
+
+      inst = inst->get_next();
+    }
+  }
+
 }
 
 
@@ -688,6 +732,25 @@ void Basic_block::reg_rename(){
 
 
   /* A REMPLIR */
+
+  //boucle pour trouver les registres disponibles.
+  for(int i =0; i< NB_REG; i++){
+
+    //si le registre est mort en entree du bloc et n'est pas defini dans le bloc 
+    if( !(this->LiveIn[i]) && !(this->Def[i]) ){
+      //ajout du registre a la liste des registres disponibles
+      frees->push_back(i);
+    }
+  }
+
+  //on supprime de la liste les registres reserves en MIPS (0, 1, 26, 27)
+  frees->remove(0); //special, toujours 0. on lenleve par securite
+  frees->remove(1); //reserve pour l'assembleur
+  frees->remove(26); //reserve par l'OS
+  frees->remove(27); //reserve par l'OS
+
+  //on lance la fonction precedente en donnant notre liste de reg dispo en arg.
+  reg_rename(frees);
 }
 
 void Basic_block::apply_scheduling(list <Node_dfg*> *new_order){

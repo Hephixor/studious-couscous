@@ -78,9 +78,6 @@ int main(int argc, char * argv[]){
 	     bb=*itbb;
 	     cout<<"----------BB "<<j<<"-----------"<<endl;
 
-	     //compute_def_liveout() du bloc
-	     bb->compute_def_liveout();
-
 	     //affichage du BB
 	     bb->display();
 	     // cr�ation des liens entre les instructions du BB
