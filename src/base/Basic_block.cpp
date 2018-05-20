@@ -745,11 +745,12 @@ void Basic_block::reg_rename(){
     }
   }
 
-  //on supprime de la liste les registres reserves en MIPS (0, 1, 26, 27)
+  //on supprime de la liste les registres reserves en MIPS.
   frees->remove(0); //special, toujours 0. on lenleve par securite
   frees->remove(1); //reserve pour l'assembleur
   frees->remove(26); //reserve par l'OS
   frees->remove(27); //reserve par l'OS
+  frees->remove(29); //StackPointer
 
   //on lance la fonction precedente en donnant notre liste de reg dispo en arg.
   reg_rename(frees);
