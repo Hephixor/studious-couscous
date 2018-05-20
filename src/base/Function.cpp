@@ -309,7 +309,7 @@ void Function::comput_succ_pred_BB(){
 			if(instr->is_cond_branch()){
 
 				if(getInst(current->get_branch())->get_op_label()!=NULL){
-					//Sucesseur branchment
+					//Sucesseur branchement
 					//	cout << "Block " << i << " branched to " << (getInst(current->get_branch())->get_op_label())->get_op() ;
 					succ = find_label_BB(getInst(current->get_branch())->get_op_label());
 					current->set_link_succ_pred(succ);
