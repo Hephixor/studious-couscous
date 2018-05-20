@@ -464,7 +464,7 @@ int Basic_block::nb_cycles(){
 
     //calcul de max( { cycle(P)+delai(Pij) } ) ou P les dependances de i_instr
     int max_delay = 0;
-    
+
     for(int j=0; j<i_instr->get_nb_pred(); j++){
       dep* current = i_instr->get_pred_dep(j);
       int delay = 0;
@@ -550,9 +550,11 @@ void Basic_block::compute_use_def(void){
       // cout << " def 4 " << Def[4] << endl;
       // cout << " def 5 " << Def[5] << endl;
       // cout << " def 6 " << Def[6] << endl;
+      // cout << " def 7 " << Def[7] << endl;
       if(Def[4]==false){ Use[4] = true; }
       if(Def[5]==false){ Use[5] = true; }
       if(Def[6]==false){ Use[6] = true; }
+      if(Def[7]==false){ Use[7] = true; }
   }
 
     if(inst->get_reg_src1()!=NULL){
@@ -642,7 +644,7 @@ void Basic_block::compute_def_liveout(){
         inst = inst->get_next();
       }
 
-    }   
+    }
   }
 
 
@@ -691,7 +693,7 @@ void Basic_block::reg_rename(list<int> *frees){
 
     //on trouve la 1e definition du registre a renommer
     inst = get_first_instruction();
-    while( !(inst->get_reg_dst()!=NULL && 
+    while( !(inst->get_reg_dst()!=NULL &&
              inst->get_reg_dst()->get_reg()==reg_a_renommer) ){
       inst = inst->get_next();
     }
@@ -699,7 +701,7 @@ void Basic_block::reg_rename(list<int> *frees){
     //une fois trouve, on renomme le registre dans sa defition.
     inst->get_reg_dst()->set_reg(reg_nouv_nom);
 
-    //puis on renomme les utilisations ulterieures 
+    //puis on renomme les utilisations ulterieures
     //jusqu'a la fin du BB ou la prochaine definition du registre (voir 3e if)
     inst = inst->get_next();
     while(inst != NULL){
@@ -736,7 +738,7 @@ void Basic_block::reg_rename(){
   //boucle pour trouver les registres disponibles.
   for(int i =0; i< NB_REG; i++){
 
-    //si le registre est mort en entree du bloc et n'est pas defini dans le bloc 
+    //si le registre est mort en entree du bloc et n'est pas defini dans le bloc
     if( !(this->LiveIn[i]) && !(this->Def[i]) ){
       //ajout du registre a la liste des registres disponibles
       frees->push_back(i);
